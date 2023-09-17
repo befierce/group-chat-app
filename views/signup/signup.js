@@ -16,7 +16,13 @@ async function submitdata(e) {
         password: password
     }
     try {
-        const response = axios.post('http://localhost:3000/user/signup', userData)
+        const response = await axios.post('http://localhost:3000/user/signup', userData)
+        if(response.status === 202){
+            window.alert("user already exists")
+        }
+        else if(response.status === 201){
+            window.alert("signup success");
+        }
 
     }
     catch(error){
