@@ -14,10 +14,10 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin:0;
+            margin: 0;
         }
 
-        .signup-container {
+        .login-container {
             background-color: #b6f4b8;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
             padding: 20px;
@@ -25,11 +25,11 @@
             text-align: center;
         }
 
-        .signup-container h2 {
+        .login-container h2 {
             color: #333;
         }
 
-        .signup-input {
+        .login-input {
             width: 90%;
             padding: 10px;
             margin: 10px 0;
@@ -38,7 +38,7 @@
             font-size: 16px;
         }
 
-        .signup-button {
+        .login-button {
             background-color: #21272e;
             color: #fff;
             border: none;
@@ -49,27 +49,23 @@
             transition: background-color 0.3s ease;
         }
 
-        .signup-button:hover {
+        .login-button:hover {
             background-color: #ae1417;
         }
     </style>
 </head>
 
 <body>
-    <div class="signup-container">
+    <div class="login-container">
         <h2>Welcome to Chat App</h2>
         <form id="myform">
-            <input class="signup-input" id ="name" type="text" placeholder="Name" >
-            <input class="signup-input" id ="email" type="email" placeholder="Email" >
-            <input class="signup-input" id="number" type="number" placeholder="number" >
-            <input class="signup-input" id="password" type="password" placeholder="Password" >
-            <button class="signup-button" type="submit">Sign up</button>
-            <a href="../login/login.html">already a user?</a>
+            <input class="login-input" type="email" id="email" placeholder="Email" required>
+            <input class="login-input" type="password" id="password" placeholder="Password" required>
+            <button class="login-button" type="submit">Login</button>
         </form>
-        <script src = "signup.js"></script>
+        <a href="../signup/signup.html"> new user?</a>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
+    <script src="login.js"></script>
 </body>
 
 </html>
