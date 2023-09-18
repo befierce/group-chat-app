@@ -12,8 +12,18 @@ async function login(e) {
     console.log(loginCredentials)
     try {
         const response = await axios.post('http://localhost:3000/user/login', loginCredentials);
+
+        console.log(response);
+        if(response.status === 200){
+            window.alert('Login Success');
+            window.location.href ='../ui/chatUi.html'
+        }
+        else if(201){
+            window.alert('invalid password');
+        }
     }
     catch(err){
+        window.alert('user does not exist please sign up first');
         console.log(err);
     }
 }

@@ -22,6 +22,7 @@ async function submitdata(e) {
         }
         else if(response.status === 201){
             window.alert("signup success");
+            window.location.href='../login/login.html';
         }
 
     }

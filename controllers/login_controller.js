@@ -21,7 +21,7 @@ module.exports = loginController = async function (req, res) {
             res.status(200).json({message:"password match", token:token});
         }
         else{
-            res.status(401).json({message:"user not authorised"});
+            res.status(201).json({message:"user not authorised"});
         }
     }
     else{
