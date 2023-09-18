@@ -5,19 +5,19 @@ require('dotenv').config();
 
 const secretKey = process.env.SECRET_USER_ID_KEY;
 
-console.log('secret_key', secretKey);
+console.log('secret_key while login', secretKey);
 
 
 module.exports = loginController = async function (req, res) {
     // console.log(req.body);
     const {email,password} = req.body;
     const existingUser = await User.findOne({where:{email: email}});
-    console.log(existingUser.id);
+    console.log("existing user id",existingUser.userId);
     if(existingUser){
         const isPasswordValid = await bcrypt.compare(password,existingUser.password);
         if(isPasswordValid){
-            const token = jwt.sign({id: existingUser.id}, secretKey)
-            console.log("token",token)
+            const token = jwt.sign({id: existingUser.userId}, secretKey)
+            console.log("token while login",token)
             res.status(200).json({message:"password match", token:token});
         }
         else{

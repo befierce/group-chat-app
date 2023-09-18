@@ -4,7 +4,7 @@ const {sequelize,Sequelize} = require('../database/connection');
 
 
 User = sequelize.define('user_list',{
-    id:{
+    userId:{
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false,

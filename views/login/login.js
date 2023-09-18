@@ -9,14 +9,16 @@ async function login(e) {
         email: email,
         password: password
     }
-    console.log(loginCredentials)
+    // console.log(loginCredentials)
     try {
         const response = await axios.post('http://localhost:3000/user/login', loginCredentials);
 
-        console.log(response);
+        console.log("token",response.data.token);
+        localStorage.setItem('token',(response.data.token));
+
         if(response.status === 200){
-            window.alert('Login Success');
-            window.location.href ='../ui/chatUi.html'
+             window.alert('Login Success');
+             window.location.href ='../ui/chatUi.html'
         }
         else if(201){
             window.alert('invalid password');
