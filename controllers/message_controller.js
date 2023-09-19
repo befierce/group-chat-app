@@ -10,14 +10,15 @@ messageController = async function (req, res) {
     const { message, token } = req.body;
     console.log('token', token);
 
-    jwt.verify(token, secret_key, (err, decoded) => {
+    jwt.verify(token, secret_key, async(err, decoded) => {
         if (err) {
             console.error("JWT verification error:", err);
             res.status(401).json({ error: 'Unauthorized' });
         } else {
             console.log("decoded key", decoded);
-            const newMessage = Message.create({message,userId:decoded.id});
-            res.status(200).json({ message: 'Message sent successfully' });
+            const newMessage = await Message.create({message,userId:decoded.id});
+            console.log("newMessage",newMessage)
+            res.status(200).json({ message: 'Message sent successfully' , currentMessage: newMessage});
         }
     });
 }
@@ -33,7 +34,7 @@ allMessageController = async function(req,res){
             res.status(401).json({ error: 'Unauthorized' });
         } else {
             console.log("decoded key", decoded.id);
-            const result = await  Message.findAll({where:{userId:decoded.id}});
+            const result = await  Message.findAll();
             res.status(200).json({result});
         }
     })

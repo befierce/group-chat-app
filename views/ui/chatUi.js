@@ -1,6 +1,6 @@
 window.addEventListener('DOMContentLoaded',getAllMessagesFromDB);
 
-
+// const messagePollingInterval = setInterval(getAllMessagesFromLS, 1500);
 
 async function sendMessageToServer() {
     const messageInput = document.getElementById('message-input');
@@ -12,24 +12,51 @@ async function sendMessageToServer() {
         console.log("message:", messageText);
 
         try {
-            await axios.post('http://localhost:3000/user/message', { message: messageText, token: token });
+            const response = await axios.post('http://localhost:3000/user/message', { message: messageText, token: token });
             messageInput.value = '';
+            console.log("sent message to server",response.data.currentMessage.message);
+            displayMessage("You", response.data.currentMessage.message, true);    
+            // const currentMessage = getCurrentMessageFromServer();
+
         } catch (error) {
             console.error('Error sending message:', error);
         }
     }
 }
-const messagePollingInterval = setInterval(getAllMessagesFromDB, 10000)
+
+function saveMessagesToLocalStorage(message){
+    const existingMessages = JSON.parse(localStorage.getItem("userMessages")) || [];
+    existingMessages.push(message);
+    localStorage.setItem("userMessages",JSON.stringify(existingMessages));
+}
+function getAllMessagesFromLS() {
+
+    const messages = JSON.parse(localStorage.getItem("userMessages")) || [];
+    console.log("messages from LS",messages);
+    clearChatMessages();
+    for(let i =0; i < messages.length; i++){
+        let message = messages[i];
+        displayMessage("You", message, true);
+    }
+}
+
+
+
 async function getAllMessagesFromDB() {
     const token = localStorage.getItem('token');
     try {
         const response =await axios.get('http://localhost:3000/user/message', { headers: { authorisation:token } });
         console.log("response",response.data.result);
         clearChatMessages();
+        const messages = {};
         for(let i =0; i < response.data.result.length; i++){
             let message = response.data.result[i].message;
+            let id = response.data.result[i].id;
+
+            messages[id] = message;
             displayMessage("You", message, true);
         }
+        localStorage.setItem('chatMessages', JSON.stringify(messages));
     }
     catch (err) {
         console.log(err)
