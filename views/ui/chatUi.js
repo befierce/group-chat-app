@@ -19,16 +19,25 @@ async function sendMessageToServer() {
         }
     }
 }
-
+const messagePollingInterval = setInterval(getAllMessagesFromDB, 10000)
 async function getAllMessagesFromDB() {
     const token = localStorage.getItem('token');
     try {
         const response =await axios.get('http://localhost:3000/user/message', { headers: { authorisation:token } });
-        console.log("response",response);
+        console.log("response",response.data.result);
+        clearChatMessages();
+        for(let i =0; i < response.data.result.length; i++){
+            let message = response.data.result[i].message;
+            displayMessage("You", message, true);
+        }
     }
     catch (err) {
         console.log(err)
     }
+}
+function clearChatMessages() {
+    const chatMessages = document.querySelector(".chat-messages");
+    chatMessages.innerHTML = ''; // Remove all child elements
 }
 
 // ------------------------------------------------------
