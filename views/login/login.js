@@ -15,6 +15,7 @@ async function login(e) {
 
         console.log("token",response.data.token);
         localStorage.setItem('token',(response.data.token));
+        localStorage.setItem('id',(response.data.id));
 
         if(response.status === 200){
              window.alert('Login Success');

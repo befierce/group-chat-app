@@ -1,112 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chitthi.com</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #726c6c;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .chat-container {
-            border: 2px solid #21272e;
-            background-color: #7ba47d;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            width: 800px;
-            max-width: 100%;
-            height: 650px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-header {
-            background-color: #21272e;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-
-        .chat-messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .chat-input {
-            padding: 10px;
-            display: flex;
-            align-items: center;
-        }
-
-        #message-input {
-            flex-grow: 1;
-            padding: 8px;
-            border: 2px solid #21272e;
-            border-radius: 4px;
-            box-shadow: #010101;
-            margin-right: 10px;
-            font-size: 16px;
-        }
-
-        #send-button {
-            background-color: #21272e;
-            color: #fff;
-            border: 2px solid #21272e;
-            border-radius: 4px;
-            padding: 8px 16px;
-            cursor: pointer;
-        }
-        /* -------------------------------- */
-
-        .chat-messages {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-}
-/* #52d726 */
-.message-container {
-    background-color: #e2d0d4;
-    border-radius: 8px;
-    margin: 8px;
-    padding: 10px;
-    max-width: 70%;
-}
-
-.message-container.user {
-    align-self: flex-end;
-    background-color: #52d726;
-    color: #000000;
-}
-
-.message-sender {
-    font-weight: bold;
-    margin-bottom: 4px;
-}
-
-.message-text {
-    word-wrap: break-word;
-}
-
-    </style>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+  
 </head>
+
 <body>
+    <!-- Add this code before your chat-container div -->
+   <div class="group-list">
+    <div class="group-header">Groups</div>
+    <form class="group-list" id="groupCreateFrom">
+    <input type="text" id="group name-input" placeholder="Name Of Group" required>
+    <button id="create-group-button" type="submit">Create Group</button>
+    </form>
+    <ul>
+        <!-- <li>Group Chat 1</li>
+        <li>Group Chat 2</li>
+        <li>Group Chat 3</li>
+        Add more group chat items as needed -->
+    </ul>
+</div>
+
+<div class="outer-chat-container">
     <div class="chat-container">
         <div class="chat-header">CHITTHI.COM</div>
         <div class="chat-messages">
@@ -117,10 +37,14 @@
             <button class="send-button" id="send-button" onclick="sendMessageToServer()">
                 <i class="fas fa-paper-plane"></i> <!-- Replace with airplane icon -->
             </button>
-            
+
         </div>
     </div>
+    <!-- <input type="texzt" id="message-input" placeholder="Type your message"> -->
+</div>
+
     <script src="chatUi.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </body>
+
 </html>

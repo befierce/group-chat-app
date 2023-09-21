@@ -18,7 +18,7 @@ module.exports = loginController = async function (req, res) {
         if(isPasswordValid){
             const token = jwt.sign({id: existingUser.userId}, secretKey)
             console.log("token while login",token)
-            res.status(200).json({message:"password match", token:token});
+            res.status(200).json({message:"password match", token:token,id:existingUser.userId});
         }
         else{
             res.status(201).json({message:"user not authorised"});

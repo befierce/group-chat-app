@@ -14,4 +14,4 @@ Message = sequelize.define('user_messages',{
     }
 })
 
-module.exports = {Message};
+module.exports = {Message,sequelize};
