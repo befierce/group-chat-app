@@ -2,7 +2,7 @@
 const Groups = require('../models/group_model')
 const UserGroups = require('../models/user_groups')
 const UserGroupMessages = require('../models/group_message_models')
-
+const {User} = require('../models/user_list');
 
 
 
@@ -65,5 +65,20 @@ exports.fetchGroupMessages = async function(req,res){
     }catch(error){
         console.log('error',error);
         res.status(200).json({message:'error fetching group messages'});
+    }
+}
+
+exports.fetchAllUsers = async function(req,res){
+    // console.log('req reaching the server');
+    
+    try{
+        const result = await User.findAll({
+            attributes: ['name', 'email','userId'],
+        });
+        
+        console.log(result);
+        res.status(200).json({result});
+    }catch(error){
+        console.log(error);
     }
 }

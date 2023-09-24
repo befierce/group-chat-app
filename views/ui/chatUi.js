@@ -1,56 +1,37 @@
 window.addEventListener('DOMContentLoaded', getAllMessagesFromDB);
 window.addEventListener('DOMContentLoaded', getAllGroupsOfUserFromDB);
-window.addEventListener('DOMContentLoaded',getAllMessagesOfAllGroupUserHave)
+window.addEventListener('DOMContentLoaded', getAllMessagesOfAllGroupUserHave)
 //    const newMessagesPollingInterval = setInterval(getAllNewMessagesFromDB, 20000);
 
 
 
 
-async function getAllMessagesOfAllGroupUserHave(){
+async function getAllMessagesOfAllGroupUserHave() {
 
 }
+function getAllMessagesFromLS() {
 
+    const messages = JSON.parse(localStorage.getItem("userMessages")) || [];
+    console.log("messages from LS", messages);
+    clearChatMessages();
+    for (let i = 0; i < messages.length; i++) {
+        let message = messages[i];
+        displayMessage("You", message, true);
+    }
+}
 async function getAllGroupsOfUserFromDB() {
-    try{
+    try {
         const userId = localStorage.getItem('id');
         const response = await axios.get(`http://localhost:3000/user/fetchGroups/${userId}`);
         // console.log("all groups of user",response.data.result[i].group_name);
-        for(let i =0; i < response.data.result.length;i++){
+        for (let i = 0; i < response.data.result.length; i++) {
             const data = response.data.result[i]
-            console.log("all groups of user",response.data.result[i].group_name);
+            console.log("all groups of user", response.data.result[i].group_name);
             displayGroup(data);
         }
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
-    }
-}
-
-
-
-async function sendMessageToServer() {
-    const messageInput = document.getElementById('message-input');
-    const messageText = messageInput.value;
-    const token = localStorage.getItem('token');
-
-    if (messageText.trim() !== '') {
-        console.log('token from local storage in ui page', token);
-        console.log("message:", messageText);
-
-        try {
-            const response = await axios.post('http://localhost:3000/user/message', { message: messageText, token: token });
-            messageInput.value = '';
-            console.log("sent message to server", response.data.currentMessage.message);
-            console.log("sent message id to server", response.data.currentMessage.id);
-            localStorage.setItem('latest msg id', (response.data.currentMessage.id));
-            const isUser = false;
-
-            displayMessage("You", response.data.currentMessage.message, true);
-            // const currentMessage = getCurrentMessageFromServer();
-
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
     }
 }
 
@@ -78,38 +59,6 @@ async function getAllNewMessagesFromDB() {
         console.log('error fetching new messsages')
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function saveMessagesToLocalStorage(message){
-//     const existingMessages = JSON.parse(localStorage.getItem("userMessages")) || [];
-//     existingMessages.push(message);
-//     localStorage.setItem("userMessages",JSON.stringify(existingMessages));
-// }
-function getAllMessagesFromLS() {
-
-    const messages = JSON.parse(localStorage.getItem("userMessages")) || [];
-    console.log("messages from LS", messages);
-    clearChatMessages();
-    for (let i = 0; i < messages.length; i++) {
-        let message = messages[i];
-        displayMessage("You", message, true);
-    }
-}
-
-
 
 async function getAllMessagesFromDB() {
     const token = localStorage.getItem('token');
@@ -144,6 +93,58 @@ async function getAllMessagesFromDB() {
     }
 }
 
+async function sendMessageToServer() {
+    const messageInput = document.getElementById('message-input');
+    const messageText = messageInput.value;
+    const token = localStorage.getItem('token');
+
+    if (messageText.trim() !== '') {
+        console.log('token from local storage in ui page', token);
+        console.log("message:", messageText);
+
+        try {
+            const response = await axios.post('http://localhost:3000/user/message', { message: messageText, token: token });
+            messageInput.value = '';
+            console.log("sent message to server", response.data.currentMessage.message);
+            console.log("sent message id to server", response.data.currentMessage.id);
+            localStorage.setItem('latest msg id', (response.data.currentMessage.id));
+            const isUser = false;
+
+            displayMessage("You", response.data.currentMessage.message, true);
+            // const currentMessage = getCurrentMessageFromServer();
+
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function saveMessagesToLocalStorage(message){
+//     const existingMessages = JSON.parse(localStorage.getItem("userMessages")) || [];
+//     existingMessages.push(message);
+//     localStorage.setItem("userMessages",JSON.stringify(existingMessages));
+// }
+
+
+
+
+
+
 
 function clearChatMessages() {
     const chatMessages = document.querySelector(".chat-messages");
@@ -152,19 +153,6 @@ function clearChatMessages() {
 
 // ------------------------------------------------------
 
-function sendMessage() {
-    const messageInput = document.getElementById("message-input");
-    const messageText = messageInput.value.trim();
-
-    if (messageText === "") {
-        return;
-    }
-
-    messageInput.value = "";
-
-    displayMessage("You", messageText, true);
-
-}
 
 function displayMessage(sender, message, isUser) {
     const chatMessages = document.querySelector(".chat-messages");
@@ -204,14 +192,14 @@ async function createGroup(e) {
     try {
         const response = await axios.post('http://localhost:3000/user/createGroup', { groupName, userId });
         console.log("response after group creation", response.data.result.gorupId);
-        localStorage.setItem(groupName,response.data.result.gorupId)
+        localStorage.setItem(groupName, response.data.result.gorupId)
         displayGroup(response.data.result)
     } catch (error) {
         console.log(error);
     }
 }
-async function setGroupToLocalStorageArray(){
-    
+async function setGroupToLocalStorageArray() {
+
 }
 function displayGroup(data) {
     const groupName = data.group_name;
@@ -231,18 +219,72 @@ function displayGroup(data) {
 
     buttonItem.addEventListener('click', () => {
         const chatHeader = document.getElementById('chat-header-element');
-        groupNameX = 'Group: '+ groupName;
+        groupNameX = 'Group: ' + groupName;
         chatHeader.textContent = groupNameX;
 
+        const dropdownContainer = document.createElement('div');
+        dropdownContainer.className = 'dropdown';
+
+        // Create the button that triggers the dropdown
+        const dropdownButton = document.createElement('button');
+        dropdownButton.className = 'dropdown-btn';
+        dropdownButton.innerHTML = '<i class="fas fa-ellipsis-v"></i>'; // You can replace this with your icon
+
+        // Create the dropdown content container
+        const dropdownContent = document.createElement('div');
+        dropdownContent.className = 'dropdown-content';
+
+        // Create individual buttons for the dropdown
+        const addUsersButton = document.createElement('button');
+        addUsersButton.id = 'add_users';
+        addUsersButton.textContent = 'Add Users';
+
+        addUsersButton.addEventListener('click', function () {
+            const container = document.getElementById('group_list');
+            container.style.display = 'none';
+            showAllUsersOfChatApp();
+        });
+
+        const seeMembersButton = document.createElement('button');
+        seeMembersButton.id = 'see_users';
+        seeMembersButton.textContent = 'See Members';
+
+        seeMembersButton.addEventListener('click', function () {
+            const container = document.getElementById('group_list');
+            container.style.display = 'none';
+            showListOfGroupMembers();
+        });
+
+        const logoutButton = document.createElement('button');
+        logoutButton.textContent = 'Logout';
+
+        logoutButton.addEventListener('click', function () {
+            logOutUser()
+        });
+
+        // Append the dropdown button and content to the dropdown container
+        dropdownContainer.appendChild(dropdownButton);
+        dropdownContainer.appendChild(dropdownContent);
+
+        // Append the individual buttons to the dropdown content
+        dropdownContent.appendChild(addUsersButton);
+        dropdownContent.appendChild(seeMembersButton);
+        dropdownContent.appendChild(logoutButton);
+
+        // Append the dropdown container to the chat header
+        chatHeader.appendChild(dropdownContainer);
+
+
+
         const chatMessages = document.querySelector(".chat-messages");
-        chatMessages.innerHTML='';
+        chatMessages.innerHTML = '';
 
         const sendMessageButton = document.getElementById('send-button');
-        sendMessageButton.onclick= sendMessageToGroupServer;
-        
-         getAllGroupMessagesFromDB(groupId)
+        sendMessageButton.onclick = sendMessageToGroupServer;
 
-        
+        getAllGroupMessagesFromDB(groupId)
+
+
     });
 
     groupLists.appendChild(buttonItem);
@@ -253,38 +295,71 @@ function displayGroup(data) {
         const userId = localStorage.getItem('id');
         const groupId = localStorage.getItem(groupName);
 
-        console.log('groupId',groupId);
-    
+        console.log('groupId', groupId);
+
         if (messageText.trim() !== '') {
             // console.log('token from local storage in ui page', token);
             console.log("message:", messageText);
-    
+
             try {
-                const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId:groupId });
+                const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId: groupId });
                 messageInput.value = '';
-                console.log("response after savinng group message",response)
+                console.log("response after savinng group message", response)
                 // localStorage.setItem('latest msg id', (response.data.currentMessage.id));
                 // const isUser = false;
-    
-                 displayMessage("You", response.data.message    , true);
+
+                displayMessage("You", response.data.message, true);
                 // const currentMessage = getCurrentMessageFromServer();
-    
+
             } catch (error) {
                 console.error('Error sending message:', error);
             }
         }
     }
 }
+function closeUserList() {
+    const userList = document.getElementById('all-user-list');
+    userList.style.display = 'none';
+
+    const container = document.getElementById('group_list');
+    container.style.display = 'block';
+}
+async function showListOfGroupMembers() {
+    try {
+        const response = await axios.get('http://localhost:3000/user/listofgroupusers');
+        console.log(response);
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+async function showAllUsersOfChatApp() {
+    try {
+        const response = await axios.get('http://localhost:3000/user/listOfAllUsers');
+        console.log(response);
+
+        const userList = document.getElementById('all-user-list');
+        userList.style.display = 'block'
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+async function logOutUser() {
+
+}
+
 
 async function getAllGroupMessagesFromDB(groupId) {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('id');
     // console.log('id for message', userId);
     try {
-        const response = await axios.get('http://localhost:3000/user/getallgroupmessage', { headers: { authorisation: token, userId:userId,groupId:groupId } });
-        console.log("response after clicking group",response);
+        const response = await axios.get('http://localhost:3000/user/getallgroupmessage', { headers: { authorisation: token, userId: userId, groupId: groupId } });
+        console.log("response after clicking group", response);
         // clearChatMessages();
-         const messages = {};
+        const messages = {};
         for (let i = 0; i < response.data.length; i++) {
             //console.log("response",response.data[i].userId);
             let message = response.data[i].message;
@@ -294,7 +369,7 @@ async function getAllGroupMessagesFromDB(groupId) {
             var isUser = false;
 
             if (response.data[i].userListUserId
-                == userId) {              
+                == userId) {
                 isUser = true;
                 displayMessage("You", message, isUser);
             }
