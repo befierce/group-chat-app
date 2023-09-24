@@ -1,7 +1,14 @@
 window.addEventListener('DOMContentLoaded', getAllMessagesFromDB);
 window.addEventListener('DOMContentLoaded', getAllGroupsOfUserFromDB);
+window.addEventListener('DOMContentLoaded',getAllMessagesOfAllGroupUserHave)
 //    const newMessagesPollingInterval = setInterval(getAllNewMessagesFromDB, 20000);
 
+
+
+
+async function getAllMessagesOfAllGroupUserHave(){
+
+}
 
 async function getAllGroupsOfUserFromDB() {
     try{
@@ -203,7 +210,9 @@ async function createGroup(e) {
         console.log(error);
     }
 }
-
+async function setGroupToLocalStorageArray(){
+    
+}
 function displayGroup(data) {
     const groupName = data.group_name;
     const groupId = data.gorupId;
@@ -221,17 +230,19 @@ function displayGroup(data) {
     buttonItem.appendChild(groupNameSpan);
 
     buttonItem.addEventListener('click', () => {
-        const chatHeader = document.getElementById('chat-header_element');
-        groupNameX = 'Group'+ groupName;
-        chatHeader.textContent = groupName;
+        const chatHeader = document.getElementById('chat-header-element');
+        groupNameX = 'Group: '+ groupName;
+        chatHeader.textContent = groupNameX;
 
         const chatMessages = document.querySelector(".chat-messages");
         chatMessages.innerHTML='';
 
-        getAllGroupMessagesFromDB()
-
         const sendMessageButton = document.getElementById('send-button');
         sendMessageButton.onclick= sendMessageToGroupServer;
+        
+         getAllGroupMessagesFromDB(groupId)
+
+        
     });
 
     groupLists.appendChild(buttonItem);
@@ -251,12 +262,11 @@ function displayGroup(data) {
             try {
                 const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId:groupId });
                 messageInput.value = '';
-                // console.log("sent message to server", response.data.currentMessage.message);
-                // console.log("sent message id to server", response.data.currentMessage.id);
+                console.log("response after savinng group message",response)
                 // localStorage.setItem('latest msg id', (response.data.currentMessage.id));
                 // const isUser = false;
     
-                // displayMessage("You", response.data.currentMessage.message, true);
+                 displayMessage("You", response.data.message    , true);
                 // const currentMessage = getCurrentMessageFromServer();
     
             } catch (error) {
@@ -266,24 +276,25 @@ function displayGroup(data) {
     }
 }
 
-async function getAllGroupMessagesFromDB() {
+async function getAllGroupMessagesFromDB(groupId) {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('id');
     // console.log('id for message', userId);
     try {
-        const response = await axios.get('http://localhost:3000/user/groupmessage', { headers: { authorisation: token } });
-
-        clearChatMessages();
-        const messages = {};
-        for (let i = 0; i < response.data.result.length; i++) {
-            //console.log("response",response.data.result[i].userId);
-            let message = response.data.result[i].message;
-            let id = response.data.result[i].id;
+        const response = await axios.get('http://localhost:3000/user/getallgroupmessage', { headers: { authorisation: token, userId:userId,groupId:groupId } });
+        console.log("response after clicking group",response);
+        // clearChatMessages();
+         const messages = {};
+        for (let i = 0; i < response.data.length; i++) {
+            //console.log("response",response.data[i].userId);
+            let message = response.data[i].message;
+            let id = response.data[i].id;
 
             messages[id] = message;
             var isUser = false;
 
-            if (response.data.result[i].userId == userId) {
+            if (response.data[i].userListUserId
+                == userId) {              
                 isUser = true;
                 displayMessage("You", message, isUser);
             }
@@ -292,7 +303,7 @@ async function getAllGroupMessagesFromDB() {
             }
 
         }
-        localStorage.setItem('chatMessages', JSON.stringify(messages));
+        // localStorage.setItem('chatMessages', JSON.stringify(messages));
     }
     catch (err) {
         console.log(err)

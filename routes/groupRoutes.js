@@ -9,6 +9,7 @@ const router = express.Router();
 router.post('/user/createGroup', groupController.saveGroupName);
 router.get('/user/fetchGroups/:id', groupController.fetchGroups);
 router.post('/user/group/message', groupController.groupMessages);
+router.get('/user/getallgroupmessage', groupController.fetchGroupMessages);
 
 
 module.exports = router;

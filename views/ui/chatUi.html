@@ -7,41 +7,44 @@
     <title>Chitthi.com</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  
+
 </head>
 
 <body>
     <!-- Add this code before your chat-container div -->
-   <div class="group-list">
-    <div class="group-header">Groups</div>
-    <form class="group-list" id="groupCreateFrom">
-    <input type="text" id="group name-input" placeholder="Name Of Group" required>
-    <button id="create-group-button" type="submit">Create Group</button>
-    </form>
-    <ul>
-        <!-- <li>Group Chat 1</li>
+    <div class="group-list">
+        <div class="group-header">Groups</div>
+        <form class="group-list-form" id="groupCreateFrom">
+            <input type="text" id="group-name-input" placeholder="Name Of Group" required>
+            <button id="create-group-button" type="submit">Create Group</button>
+        </form>
+        <div class="xxx">
+            <ul id="list_of_groups">
+                <!-- <li>Group Chat 1</li>
         <li>Group Chat 2</li>
         <li>Group Chat 3</li>
         Add more group chat items as needed -->
-    </ul>
-</div>
-
-<div class="outer-chat-container">
-    <div class="chat-container">
-        <div class="chat-header">CHITTHI.COM</div>
-        <div class="chat-messages">
-            <!-- Messages will appear here -->
+            </ul>
         </div>
-        <div class="chat-input">
-            <input type="text" id="message-input" placeholder="Type your message">
-            <button class="send-button" id="send-button" onclick="sendMessageToServer()">
-                <i class="fas fa-paper-plane"></i> <!-- Replace with airplane icon -->
-            </button>
 
-        </div>
     </div>
-    <!-- <input type="texzt" id="message-input" placeholder="Type your message"> -->
-</div>
+
+    <div class="outer-chat-container">
+        <div class="chat-container">
+            <div class="chat-header" id="chat-header-element">CHITTHI.COM(global chat)</div>
+            <div class="chat-messages">
+                <!-- Messages will appear here -->
+            </div>
+            <div class="chat-input">
+                <input type="text" id="message-input" placeholder="Type your message">
+                <button class="send-button" id="send-button" onclick="sendMessageToServer()">
+                    <i class="fas fa-paper-plane"></i> <!-- Replace with airplane icon -->
+                </button>
+
+            </div>
+        </div>
+        <!-- <input type="texzt" id="message-input" placeholder="Type your message"> -->
+    </div>
 
     <script src="chatUi.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
