@@ -242,7 +242,7 @@ function displayGroup(data) {
         addUsersButton.addEventListener('click', function () {
             const container = document.getElementById('group_list');
             container.style.display = 'none';
-            showAllUsersOfChatApp();
+            showAllUsersOfChatApp(groupId);
         });
 
         const seeMembersButton = document.createElement('button');
@@ -333,18 +333,81 @@ async function showListOfGroupMembers() {
         console.log(error);
     }
 }
-async function showAllUsersOfChatApp() {
+async function showAllUsersOfChatApp(groupId) {
     try {
         const response = await axios.get('http://localhost:3000/user/listOfAllUsers');
         console.log(response);
 
         const userList = document.getElementById('all-user-list');
-        userList.style.display = 'block'
+        // userList.innerHTML = '';
+
+        const listOfAllUsers = document.getElementById('list_of_users');
+
+        listOfAllUsers.innerHTML = '';
+
+        const userData = response.data.result;
+
+        const userTable = document.createElement('table');
+        userTable.classList.add('user-table'); 
+
+        // Create table header row
+        const headerRow = document.createElement('tr');
+        const emailHeader = document.createElement('th');
+        emailHeader.textContent = 'Email';
+        headerRow.appendChild(emailHeader);
+        userTable.appendChild(headerRow);
+
+        // Loop through the user data and create table rows for each user
+        userData.forEach(user => {
+            const userRow = document.createElement('tr');
+            
+            // Create a cell for the email
+            const emailCell = document.createElement('td');
+            emailCell.textContent = user.email; 
+            userRow.appendChild(emailCell);
+            
+            // Create a hidden input field for the email
+            const emailInput = document.createElement('input');
+            emailInput.type = 'hidden';
+            emailInput.name = 'email'; 
+            emailInput.value = user.email; 
+
+            //  console.log("email as hidden input",groupId);
+            userRow.appendChild(emailInput);
+            
+            // Create a cell for the "Add User" button
+            const addButtonCell = document.createElement('td');
+            const addButton = document.createElement('button');
+            addButton.textContent = 'Add User';
+             addButton.addEventListener('click', async() => {
+                const userEmail = emailInput.value;
+                try {
+                    const response = await axios.post('http://localhost:3000/user/addUser/to/group', { email: user.email ,groupId:groupId})
+            }catch(error){
+                console.log(error);
+            }
+            });
+            addButtonCell.appendChild(addButton);
+            userRow.appendChild(addButtonCell);
+            
+            userTable.appendChild(userRow);
+        });
+
+        // Append the table to the same element where you are displaying the user list
+        listOfAllUsers.appendChild(userTable);
+
+        // Add CSS style to the list container to make it scrollable
+        listOfAllUsers.style.overflow = 'auto';
+        listOfAllUsers.style.maxHeight = '300px'; // Set a max height as needed
+
+        userList.style.display = 'block';
     }
     catch (error) {
         console.log(error);
     }
 }
+
+
 
 async function logOutUser() {
 

@@ -11,5 +11,6 @@ router.get('/user/fetchGroups/:id', groupController.fetchGroups);
 router.post('/user/group/message', groupController.groupMessages);
 router.get('/user/getallgroupmessage', groupController.fetchGroupMessages);
 router.get('/user/listOfAllUsers',groupController.fetchAllUsers);
+router.post('/user/addUser/to/group',groupController.addUserToAGroup);
 
 module.exports = router;

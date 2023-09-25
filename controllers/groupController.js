@@ -82,3 +82,8 @@ exports.fetchAllUsers = async function(req,res){
         console.log(error);
     }
 }
+
+
+exports.addUserToAGroup = async function(req,res){
+    console.log(req.body);
+}
