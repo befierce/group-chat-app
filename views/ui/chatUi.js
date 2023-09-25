@@ -19,14 +19,30 @@ function getAllMessagesFromLS() {
         displayMessage("You", message, true);
     }
 }
+// async function getAllGroupsOfUserFromDB() {
+//     try {
+//         const userId = localStorage.getItem('id');
+//         const response = await axios.get(`http://localhost:3000/user/fetchGroups/${userId}`);
+//         // console.log("all groups of user",response.data.result[i].group_name);
+//         for (let i = 0; i < response.data.result.length; i++) {
+//             const data = response.data.result[i]
+//             console.log("all groups of user", response.data.result[i].group_name);
+//             displayGroup(data);
+//         }
+
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
 async function getAllGroupsOfUserFromDB() {
     try {
         const userId = localStorage.getItem('id');
         const response = await axios.get(`http://localhost:3000/user/fetchGroups/${userId}`);
-        // console.log("all groups of user",response.data.result[i].group_name);
-        for (let i = 0; i < response.data.result.length; i++) {
-            const data = response.data.result[i]
-            console.log("all groups of user", response.data.result[i].group_name);
+        console.log("all groups of user",response.data);
+        for (let i = 0; i < response.data.length; i++) {
+            const data = response.data[i]
+            // console.log("all groups of user", response.data.result[i].group_name);
             displayGroup(data);
         }
 
@@ -202,8 +218,12 @@ async function setGroupToLocalStorageArray() {
 
 }
 function displayGroup(data) {
-    const groupName = data.group_name;
-    const groupId = data.gorupId;
+    const groupName = data.group.group_name;
+    const groupId = data.groupGorupId;
+
+
+    console.log("revieving group id",groupId)
+    const userId = localStorage.getItem('id');
     console.log("group is", groupName);
     console.log("group id is", groupId);
     const groupLists = document.getElementById('list_of_groups');
@@ -242,7 +262,7 @@ function displayGroup(data) {
         addUsersButton.addEventListener('click', function () {
             const container = document.getElementById('group_list');
             container.style.display = 'none';
-            showAllUsersOfChatApp(groupId);
+            showAllUsersOfChatApp(groupId, userId);
         });
 
         const seeMembersButton = document.createElement('button');
@@ -333,7 +353,7 @@ async function showListOfGroupMembers() {
         console.log(error);
     }
 }
-async function showAllUsersOfChatApp(groupId) {
+async function showAllUsersOfChatApp(groupId, adminId) {
     try {
         const response = await axios.get('http://localhost:3000/user/listOfAllUsers');
         console.log(response);
@@ -348,7 +368,7 @@ async function showAllUsersOfChatApp(groupId) {
         const userData = response.data.result;
 
         const userTable = document.createElement('table');
-        userTable.classList.add('user-table'); 
+        userTable.classList.add('user-table');
 
         // Create table header row
         const headerRow = document.createElement('tr');
@@ -360,36 +380,46 @@ async function showAllUsersOfChatApp(groupId) {
         // Loop through the user data and create table rows for each user
         userData.forEach(user => {
             const userRow = document.createElement('tr');
-            
+
             // Create a cell for the email
             const emailCell = document.createElement('td');
-            emailCell.textContent = user.email; 
+            emailCell.textContent = user.email;
             userRow.appendChild(emailCell);
-            
+
             // Create a hidden input field for the email
             const emailInput = document.createElement('input');
             emailInput.type = 'hidden';
-            emailInput.name = 'email'; 
-            emailInput.value = user.email; 
+            emailInput.name = 'email';
+            emailInput.value = user.email;
 
             //  console.log("email as hidden input",groupId);
             userRow.appendChild(emailInput);
-            
+
             // Create a cell for the "Add User" button
             const addButtonCell = document.createElement('td');
             const addButton = document.createElement('button');
             addButton.textContent = 'Add User';
-             addButton.addEventListener('click', async() => {
+            addButton.addEventListener('click', async () => {
                 const userEmail = emailInput.value;
                 try {
-                    const response = await axios.post('http://localhost:3000/user/addUser/to/group', { email: user.email ,groupId:groupId})
-            }catch(error){
-                console.log(error);
-            }
+                    const response = await axios.post('http://localhost:3000/user/addUser/to/group', { email: user.email, groupId: groupId, adminId: adminId, userId: user.userId })
+
+                    if (response.status == 201) {
+                        alert('user already present in the group');
+                    }
+                    else if (response.status == 200) {
+                        addButton.textContent = '✓ Added';
+                        // addButton.style.backgroundColor = 'green';
+                        addButton.disabled = true;
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                }
             });
             addButtonCell.appendChild(addButton);
             userRow.appendChild(addButtonCell);
-            
+
             userTable.appendChild(userRow);
         });
 

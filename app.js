@@ -22,8 +22,11 @@ app.use(express.json());
 User.hasMany(Message, { foreignKey: 'userId' });
 Message.belongsTo(User, { foreignKey: 'userId' });
 
+// Assuming you have UserGroups and Groups defined as Sequelize models
+UserGroups.belongsTo(User, { foreignKey: 'userListUserId' });
+UserGroups.belongsTo(Groups, { foreignKey: 'groupGorupId' });
 
-User.belongsToMany(Groups, {through:UserGroups});
+User.belongsToMany(Groups, {through:UserGroups,as: 'group'} );
 Groups.belongsToMany(User, {through:UserGroups});
 
 Groups.hasMany(UserGroupMessages);
