@@ -18,6 +18,13 @@
             margin-right: 10px;
         }
 
+        #list_of_users {
+            max-height: 300px;
+            /* Set a maximum height for the container */
+            overflow: auto;
+            /* Add a scrollbar when content overflows */
+        }
+
         .group-header {
             position: relative;
             /* Make the header a positioned container */
@@ -112,8 +119,9 @@
     <!-- Add this HTML structure where you want to display the user names -->
     <div class="group-list" id="all-user-list" style="display: none;">
         <div>
-            <div class="group-header">All Users List
-                <button id="close-button-user-list" class="close-button" type="button" onclick="closeUserList()">×</button>
+            <div class="group-header">Global Users List
+                <button id="close-button-user-list" class="close-button" type="button"
+                    onclick="closeUserList()">×</button>
             </div>
         </div>
         <div class="xxx">

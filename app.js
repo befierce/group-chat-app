@@ -35,7 +35,6 @@ User.hasMany(UserGroupMessages);
 
 
 
-
 sequelize.sync({force:false})
     .then(() => {
         console.log('Database and tables synced.');

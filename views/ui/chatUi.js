@@ -42,7 +42,8 @@ async function getAllGroupsOfUserFromDB() {
         console.log("all groups of user",response.data);
         for (let i = 0; i < response.data.length; i++) {
             const data = response.data[i]
-            // console.log("all groups of user", response.data.result[i].group_name);
+            console.log("///////////",data.group.group_name)
+            // localStorage.setItem(groupName, response.data.result.gorupId)
             displayGroup(data);
         }
 
@@ -207,9 +208,10 @@ async function createGroup(e) {
     console.log('groupName', groupName);
     try {
         const response = await axios.post('http://localhost:3000/user/createGroup', { groupName, userId });
-        console.log("response after group creation", response.data.result.gorupId);
-        localStorage.setItem(groupName, response.data.result.gorupId)
-        displayGroup(response.data.result)
+        console.log("group id after group creation", response.data.result);
+        // const groupId = response.data.result.gorupId;
+        // localStorage.setItem(groupName, groupId.toString());
+        displayGroupxc(response.data.result)
     } catch (error) {
         console.log(error);
     }
@@ -217,12 +219,148 @@ async function createGroup(e) {
 async function setGroupToLocalStorageArray() {
 
 }
+
+function displayGroupxc(data) {
+    const groupName = data.group_name;
+    const groupId = data.gorupId;
+
+
+    console.log("revieving group id",groupId)
+
+    localStorage.setItem(groupName,groupId);
+
+
+
+    const userId = localStorage.getItem('id');
+    console.log("group is", groupName);
+    console.log("group id is", groupId);
+    const groupLists = document.getElementById('list_of_groups');
+
+    const buttonItem = document.createElement('button');
+    buttonItem.className = 'group_button';
+    buttonItem.setAttribute('groupId', groupId);
+
+    const groupNameSpan = document.createElement('span');
+    groupNameSpan.textContent = groupName;
+
+    buttonItem.appendChild(groupNameSpan);
+
+    buttonItem.addEventListener('click', () => {
+        const chatHeader = document.getElementById('chat-header-element');
+        groupNameX = 'Group: ' + groupName;
+        chatHeader.textContent = groupNameX;
+
+        const dropdownContainer = document.createElement('div');
+        dropdownContainer.className = 'dropdown';
+
+        // Create the button that triggers the dropdown
+        const dropdownButton = document.createElement('button');
+        dropdownButton.className = 'dropdown-btn';
+        dropdownButton.innerHTML = '<i class="fas fa-ellipsis-v"></i>'; // You can replace this with your icon
+
+        // Create the dropdown content container
+        const dropdownContent = document.createElement('div');
+        dropdownContent.className = 'dropdown-content';
+
+        // Create individual buttons for the dropdown
+        const addUsersButton = document.createElement('button');
+        addUsersButton.id = 'add_users';
+        addUsersButton.textContent = 'Add Users';
+
+        addUsersButton.addEventListener('click', function () {
+            const container = document.getElementById('group_list');
+            container.style.display = 'none';
+            showAllUsersOfChatApp(groupId, userId);
+        });
+
+        const seeMembersButton = document.createElement('button');
+        seeMembersButton.id = 'see_users';
+        seeMembersButton.textContent = 'See Members';
+
+        seeMembersButton.addEventListener('click', function () {
+            const container = document.getElementById('group_list');
+            container.style.display = 'none';
+            showListOfGroupMembers();
+        });
+
+        const logoutButton = document.createElement('button');
+        logoutButton.textContent = 'Logout';
+
+        logoutButton.addEventListener('click', function () {
+            logOutUser()
+        });
+
+        // Append the dropdown button and content to the dropdown container
+        dropdownContainer.appendChild(dropdownButton);
+        dropdownContainer.appendChild(dropdownContent);
+
+        // Append the individual buttons to the dropdown content
+        dropdownContent.appendChild(addUsersButton);
+        dropdownContent.appendChild(seeMembersButton);
+        dropdownContent.appendChild(logoutButton);
+
+        // Append the dropdown container to the chat header
+        chatHeader.appendChild(dropdownContainer);
+
+
+
+        const chatMessages = document.querySelector(".chat-messages");
+        chatMessages.innerHTML = '';
+
+        const sendMessageButton = document.getElementById('send-button');
+        sendMessageButton.onclick = sendMessageToGroupServer;
+
+        getAllGroupMessagesFromDB(groupId)
+
+
+    });
+
+    groupLists.appendChild(buttonItem);
+
+    async function sendMessageToGroupServer() {
+        const messageInput = document.getElementById('message-input');
+        const messageText = messageInput.value;
+        const userId = localStorage.getItem('id');
+        const groupId = localStorage.getItem(groupName);
+
+        console.log('groupId', groupId);
+
+        if (messageText.trim() !== '') {
+            // console.log('token from local storage in ui page', token);
+            console.log("message:", messageText);
+
+            try {
+                const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId: groupId });
+                messageInput.value = '';
+                console.log("response after savinng group message", response)
+                // localStorage.setItem('latest msg id', (response.data.currentMessage.id));
+                // const isUser = false;
+
+                displayMessage("You", response.data.message, true);
+                // const currentMessage = getCurrentMessageFromServer();
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+    }
+}
+
+
+
+
+
 function displayGroup(data) {
     const groupName = data.group.group_name;
     const groupId = data.groupGorupId;
 
 
     console.log("revieving group id",groupId)
+
+    localStorage.setItem(groupName,groupId);
+
+
+
     const userId = localStorage.getItem('id');
     console.log("group is", groupName);
     console.log("group id is", groupId);
