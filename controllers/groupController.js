@@ -70,6 +70,10 @@ exports.groupMessages = async function (req, res) {
     }
 }
 
+
+
+
+
 exports.fetchGroupMessages = async function (req, res) {
     console.log(req.headers)
     const { groupid } = req.headers;
@@ -78,8 +82,12 @@ exports.fetchGroupMessages = async function (req, res) {
         const result = await UserGroupMessages.findAll({
             where: {
                 groupGorupId: groupid
+            },include: {
+                model: User,
+                attributes: ['name'],
             }
         });
+        console.log("r-----",result)
         res.status(200).json(result);
     } catch (error) {
         console.log('error', error);

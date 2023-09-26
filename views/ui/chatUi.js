@@ -80,17 +80,18 @@ async function getAllNewMessagesFromDB() {
 async function getAllMessagesFromDB() {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('id');
-    // console.log('id for message', userId);
+    console.log("this funciton is working")
     try {
         const response = await axios.get('http://localhost:3000/user/message', { headers: { authorisation: token } });
-
+        console.log("response of all message in global group",response);
         clearChatMessages();
         const messages = {};
         for (let i = 0; i < response.data.result.length; i++) {
             //console.log("response",response.data.result[i].userId);
             let message = response.data.result[i].message;
             let id = response.data.result[i].id;
-
+            let name = response.data.result[i].user_list.name;
+            console.log("name reaching",name);
             messages[id] = message;
             var isUser = false;
 
@@ -99,7 +100,7 @@ async function getAllMessagesFromDB() {
                 displayMessage("You", message, isUser);
             }
             else {
-                displayMessage("You", message, isUser);
+                displayMessage(name, message, isUser);
             }
 
         }
@@ -125,7 +126,6 @@ async function sendMessageToServer() {
             console.log("sent message to server", response.data.currentMessage.message);
             console.log("sent message id to server", response.data.currentMessage.id);
             localStorage.setItem('latest msg id', (response.data.currentMessage.id));
-            const isUser = false;
 
             displayMessage("You", response.data.currentMessage.message, true);
             // const currentMessage = getCurrentMessageFromServer();
@@ -595,6 +595,7 @@ async function getAllGroupMessagesFromDB(groupId) {
             //console.log("response",response.data[i].userId);
             let message = response.data[i].message;
             let id = response.data[i].id;
+            let name = response.data[i].user_list.name;
 
             messages[id] = message;
             var isUser = false;
@@ -605,7 +606,7 @@ async function getAllGroupMessagesFromDB(groupId) {
                 displayMessage("You", message, isUser);
             }
             else {
-                displayMessage("You", message, isUser);
+                displayMessage(name, message, isUser);
             }
 
         }

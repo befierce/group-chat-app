@@ -33,10 +33,19 @@ Groups.hasMany(UserGroupMessages);
 User.hasMany(UserGroupMessages);
 
 
+UserGroupMessages.belongsTo(User);
+
+
+
+
+
+
+
 
 
 sequelize.sync({force:false})
     .then(() => {
+        sequelize.options.logging = console.log;
         console.log('Database and tables synced.');
     })
     .catch((error) => {
