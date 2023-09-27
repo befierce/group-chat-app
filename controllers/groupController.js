@@ -1,10 +1,10 @@
-// const {sequelize, Sequelize,}
+const { sequelize, Sequelize } = require('../database/connection');
 const Groups = require('../models/group_model')
 const UserGroups = require('../models/user_groups')
 const UserGroupMessages = require('../models/group_message_models')
 const { User } = require('../models/user_list');
 
-
+// const json = require('json')
 
 exports.saveGroupName = async function (req, res) {
     console.log(req.body);
@@ -25,6 +25,52 @@ exports.saveGroupName = async function (req, res) {
     }
 
 }
+
+// exports.newGroupMessageController = async function (req, res) {
+//     console.log("bosy of new messages request", req.params);
+//     const queryParam = JSON.parse(req.query.ActiveGroupAndItsLatestMessageId);
+//     // let offsetMessageId = req.params.id;
+//     // try {
+//     //     const newMessages = await Message.findAll({
+//     //         where: {
+//     //             id: {
+//     //                 [Sequelize.Op.gt]: offsetMessageId
+//     //             }
+//     //         }
+//     //     })
+//     //     // console.log(newMsessages);
+//     //     res.status(200).json({ newMessages });
+//     // }
+//     // catch (error) {
+//     //     console.log(error);
+//     // }
+// }
+exports.newGroupMessageController = async function (req, res) {
+    console.log("*******star", req.params)
+
+    // Parse AGRMID and AGID as numbers
+    const AGRMID = parseInt(req.params.AGRMID);
+    const AGID = parseInt(req.params.AGID);
+
+    try {
+        const newGroupMessages = await UserGroupMessages.findAll({
+            where: {
+                groupGorupId: AGID,
+                id: { [Sequelize.Op.gt]: AGRMID }
+            },
+            // offset:  // Set offset to 0 for now, you can adjust it as needed
+        });
+
+        console.log(newGroupMessages);
+
+        res.status(200).json({ messages: newGroupMessages });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+
 
 exports.fetchGroups = async function (req, res) {
     console.log("Request to fetch groups for user ID:", req.params.id);
@@ -136,5 +182,29 @@ exports.addUserToAGroup = async function (req, res) {
     } catch (error) {
         console.log(error);
         res.status(400).json({ message: 'some error happened' });
+    }
+}
+
+exports.fetchAllGroupMembers = async function (req, res) {
+    const groupId = req.params.groupId; // Extract the 'groupId' from the request parameters
+
+    try {
+        const result = await UserGroups.findAll({
+            where: {
+                groupGorupId: groupId 
+            },
+            include:{
+                model:User,
+                attributes:['email']
+            }
+        });
+        console.log("(*(*(*(",result)
+        res.status(200).json({result});
+        // Handle the result, e.g., send it as a response
+        // res.json(result);
+    } catch (error) {
+        console.log(error);
+        // Handle the error, e.g., send an error response
+        res.status(500).json({ error: 'Internal server error' });
     }
 }

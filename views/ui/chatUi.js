@@ -1,10 +1,60 @@
 window.addEventListener('DOMContentLoaded', getAllMessagesFromDB);
 window.addEventListener('DOMContentLoaded', getAllGroupsOfUserFromDB);
 window.addEventListener('DOMContentLoaded', getAllMessagesOfAllGroupUserHave)
-//    const newMessagesPollingInterval = setInterval(getAllNewMessagesFromDB, 20000);
+    //  const newMessagesPollingInterval = setInterval(getAllNewMessagesFromDB, 500);
+    const newGroupMessagesPollingInterval = setInterval(getAllNewGroupMessagesFromDB, 5000);
 
+async function getAllNewGroupMessagesFromDB() {
+    const AGID = localStorage.getItem('A.G.I.D');
+    const AGRMID = localStorage.getItem('A.G.R.M.ID');
+    const userId = localStorage.getItem('id');
+    // const encodedAGRMID = encodeURIComponent(AGRMID);
+// const encodedAGID = encodeURIComponent(AGID);
+    // console.log("latestMessageOfUserHasId", latestMessageOfUserHasSentId);
+    try {
+        const response = await axios.get(`http://localhost:3000/user/newGroupMessages/${AGRMID}/${AGID}`);
+        console.log(response.data.newMessages);
+        // for (let i = 0; i < response.data.newMessages.length; i++) {
+        //     console.log("--->", response.data.newMessages[i])
+        //     if (response.data.newMessages.userId == userId) {
 
+        //         displayMessage("You", response.data.newMessages[i].message, true);
+        //     }
+        //     else {
+        //         displayMessage("You", response.data.newMessages[i].message, false);
+        //     }
+        //     localStorage.setItem('latest msg id', (response.data.newMessages[i].id));
+        // }
 
+    }
+    catch (errr) {
+        console.log('error fetching new messsages')
+    }
+}
+async function getAllNewMessagesFromDB() {
+    const latestMessageOfUserHasSentId = localStorage.getItem('latest msg id');
+    const userId = localStorage.getItem('id');
+    console.log("latestMessageOfUserHasId", latestMessageOfUserHasSentId);
+    try {
+        const response = await axios.get(`http://localhost:3000/user/newMessage/${latestMessageOfUserHasSentId}`);
+        console.log(response.data.newMessages);
+        for (let i = 0; i < response.data.newMessages.length; i++) {
+            console.log("--->", response.data.newMessages[i])
+            if (response.data.newMessages.userId == userId) {
+
+                displayMessage("You", response.data.newMessages[i].message, true);
+            }
+            else {
+                displayMessage("You", response.data.newMessages[i].message, false);
+            }
+            localStorage.setItem('latest msg id', (response.data.newMessages[i].id));
+        }
+
+    }
+    catch (errr) {
+        console.log('error fetching new messsages')
+    }
+}
 
 async function getAllMessagesOfAllGroupUserHave() {
 
@@ -333,7 +383,8 @@ function displayGroupxc(data) {
                 const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId: groupId });
                 messageInput.value = '';
                 console.log("response after savinng group message", response)
-                // localStorage.setItem('latest msg id', (response.data.currentMessage.id));
+                 localStorage.setItem('A.G.R.M', (response.data.id));//active group recent message
+                 localStorage.setItem('A.G.I.D', (groupId));//active group i d
                 // const isUser = false;
 
                 displayMessage("You", response.data.message, true);
@@ -410,7 +461,7 @@ function displayGroup(data) {
         seeMembersButton.addEventListener('click', function () {
             const container = document.getElementById('group_list');
             container.style.display = 'none';
-            showListOfGroupMembers();
+            showListOfGroupMembers(groupId,userId);
         });
 
         const logoutButton = document.createElement('button');
@@ -463,8 +514,8 @@ function displayGroup(data) {
                 const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId: groupId });
                 messageInput.value = '';
                 console.log("response after savinng group message", response)
-                // localStorage.setItem('latest msg id', (response.data.currentMessage.id));
-                // const isUser = false;
+                localStorage.setItem('A.G.R.M.ID', (response.data.id));//active group recent message ID
+                localStorage.setItem('A.G.I.D', groupId);//active group i d
 
                 displayMessage("You", response.data.message, true);
                 // const currentMessage = getCurrentMessageFromServer();
@@ -482,10 +533,91 @@ function closeUserList() {
     const container = document.getElementById('group_list');
     container.style.display = 'block';
 }
-async function showListOfGroupMembers() {
+async function showListOfGroupMembers(groupId,adminId) {
     try {
-        const response = await axios.get('http://localhost:3000/user/listofgroupusers');
+        const response = await axios.get(`http://localhost:3000/user/listOfGroupUsers/${groupId}/${adminId}`);
+
         console.log(response);
+
+        
+        const userList = document.getElementById('all-user-list');
+        // userList.innerHTML = '';
+
+        const listOfAllUsers = document.getElementById('list_of_users');
+
+        listOfAllUsers.innerHTML = '';
+
+        const userData = response.data.result;
+
+        const userTable = document.createElement('table');
+        userTable.classList.add('user-table');
+
+        // Create table header row
+        const headerRow = document.createElement('tr');
+        const emailHeader = document.createElement('th');
+        emailHeader.textContent = 'Email';
+        headerRow.appendChild(emailHeader);
+        userTable.appendChild(headerRow);
+
+        // Loop through the user data and create table rows for each user
+        userData.forEach(user => {
+            const userRow = document.createElement('tr');
+
+            // Create a cell for the email
+            const emailCell = document.createElement('td');
+            emailCell.textContent = user.email;
+            userRow.appendChild(emailCell);
+
+            // Create a hidden input field for the email
+            const emailInput = document.createElement('input');
+            emailInput.type = 'hidden';
+            emailInput.name = 'email';
+            emailInput.value = user.user_list.email;
+
+            //  console.log("email as hidden input",groupId);
+            userRow.appendChild(emailInput);
+
+            // Create a cell for the "Add User" button
+            const addButtonCell = document.createElement('td');
+            const addButton = document.createElement('button');
+            addButton.textContent = 'Add User';
+            addButton.addEventListener('click', async () => {
+                const userEmail = emailInput.value;
+                try {
+                    const response = await axios.post('http://localhost:3000/user/addUser/to/group', { email: user.email, groupId: groupId, adminId: adminId, userId: user.userId })
+
+                    if (response.status == 201) {
+                        alert('user already present in the group');
+                    }
+                    else if (response.status == 200) {
+                        addButton.textContent = '✓ Added';
+                        // addButton.style.backgroundColor = 'green';
+                        addButton.disabled = true;
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+            addButtonCell.appendChild(addButton);
+            userRow.appendChild(addButtonCell);
+
+            userTable.appendChild(userRow);
+        });
+
+        // Append the table to the same element where you are displaying the user list
+        listOfAllUsers.appendChild(userTable);
+
+        // Add CSS style to the list container to make it scrollable
+        listOfAllUsers.style.overflow = 'auto';
+        listOfAllUsers.style.maxHeight = '300px'; // Set a max height as needed
+
+        userList.style.display = 'block';
+
+
+
+
+
     }
     catch (error) {
         console.log(error);
