@@ -5,26 +5,30 @@ window.addEventListener('DOMContentLoaded', getAllMessagesOfAllGroupUserHave)
     const newGroupMessagesPollingInterval = setInterval(getAllNewGroupMessagesFromDB, 5000);
 
 async function getAllNewGroupMessagesFromDB() {
-    const AGID = localStorage.getItem('A.G.I.D');
-    const AGRMID = localStorage.getItem('A.G.R.M.ID');
+    let AGID = localStorage.getItem('A.G.I.D');
+    let AGRMID = localStorage.getItem('A.G.R.M.ID');
     const userId = localStorage.getItem('id');
-    // const encodedAGRMID = encodeURIComponent(AGRMID);
-// const encodedAGID = encodeURIComponent(AGID);
-    // console.log("latestMessageOfUserHasId", latestMessageOfUserHasSentId);
+    if(AGID == null){
+        AGID = 0;
+    }
+    if(AGRMID == null){
+        AGRMID = 0;
+    }
+
     try {
         const response = await axios.get(`http://localhost:3000/user/newGroupMessages/${AGRMID}/${AGID}`);
-        console.log(response.data.newMessages);
-        // for (let i = 0; i < response.data.newMessages.length; i++) {
-        //     console.log("--->", response.data.newMessages[i])
-        //     if (response.data.newMessages.userId == userId) {
-
-        //         displayMessage("You", response.data.newMessages[i].message, true);
-        //     }
-        //     else {
-        //         displayMessage("You", response.data.newMessages[i].message, false);
-        //     }
-        //     localStorage.setItem('latest msg id', (response.data.newMessages[i].id));
-        // }
+        console.log(response.data.messages);
+        for (let i = 0; i < response.data.messages.length; i++) {
+            console.log("--->", response.data.messages[i].user_list.name)
+            const name = response.data.messages[i].user_list.name;
+            if (response.data.messages[i].userListUserId == userId) {
+                displayMessage("You", response.data.messages[i].message, true);
+            }
+            else {
+                displayMessage(name, response.data.messages[i].message, false);
+            }
+            localStorage.setItem('A.G.R.M.ID', (response.data.messages[i].id));
+        }
 
     }
     catch (errr) {

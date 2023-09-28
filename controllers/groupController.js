@@ -59,6 +59,12 @@ exports.newGroupMessageController = async function (req, res) {
                 id: { [Sequelize.Op.gt]: AGRMID }
             },
             // offset:  // Set offset to 0 for now, you can adjust it as needed
+            include: [
+                {
+                    model: User,
+                    attributes: ['name']
+                }
+            ]
         });
 
         console.log(newGroupMessages);

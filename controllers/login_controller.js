@@ -12,7 +12,6 @@ module.exports = loginController = async function (req, res) {
     // console.log(req.body);
     const {email,password} = req.body;
     const existingUser = await User.findOne({where:{email: email}});
-    console.log("existing user id",existingUser.userId);
     if(existingUser){
         const isPasswordValid = await bcrypt.compare(password,existingUser.password);
         if(isPasswordValid){
