@@ -62,6 +62,25 @@ app.use('/', messageRoutes);
 app.use('/',groupRoutes);
 
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
+
+const io = require('socket.io')(server,{
+    cors:{
+        origin: 'http://127.0.0.1:5500'
+    }
+});
+
+io.on('connection',(socket)=>{
+    console.log('user connected');
+
+    socket.on('send-message',(message)=>{
+        console.log("message recieved using socket", message);
+         io.emit('recieve-message', message);
+    })
+
+})
+
+
+// module.exports = {server,io}

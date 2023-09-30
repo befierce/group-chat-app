@@ -9,7 +9,7 @@ console.log("here is the sec key", secret_key);
 
 
 messageController = async function (req, res) {
-    console.log(req.body);
+    // console.log(req.body);
     const { message, token } = req.body;
     console.log('token', token);
 
@@ -20,14 +20,24 @@ messageController = async function (req, res) {
         } else {
             console.log("decoded key", decoded);
             const newMessage = await Message.create({ message, userId: decoded.id });
-            console.log("newMessage", newMessage)
+            
+            // console.log("newMessage", newMessage)
+            // io.on('connection',(socket)=>{
+            //     console.log('user connected');
+            
+            //     socket.on('send-message',(message)=>{
+            //         console.log("message recieved using socket", message);
+            //         io.emit('recieve-message', message);
+            //     })
+            
+            // })
             res.status(200).json({ message: 'Message sent successfully', currentMessage: newMessage });
         }
     });
 }
 
 allMessageController = async function (req, res) {
-    console.log(req.headers.authorisation);
+    // console.log(req.headers.authorisation);
     // jwt.verify(token)
     const token = req.headers.authorisation;
 
@@ -45,7 +55,7 @@ allMessageController = async function (req, res) {
                     }
                 });
 
-                console.log("*******", result);
+                // console.log("*******", result);
             res.status(200).json({ result });
             }catch(error){
                 console.log(error);
@@ -98,7 +108,7 @@ allMessageController = async function (req, res) {
 
 
 newMessageController = async function (req, res) {
-    console.log("bosy of new messages request", req.params);
+    // console.log("bosy of new messages request", req.params);
     let offsetMessageId = req.params.id;
     try {
         const newMessages = await Message.findAll({

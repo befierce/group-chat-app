@@ -1,17 +1,24 @@
+const socket = io('http://localhost:3000');
 window.addEventListener('DOMContentLoaded', getAllMessagesFromDB);
+
+
 window.addEventListener('DOMContentLoaded', getAllGroupsOfUserFromDB);
 window.addEventListener('DOMContentLoaded', getAllMessagesOfAllGroupUserHave)
-    //  const newMessagesPollingInterval = setInterval(getAllNewMessagesFromDB, 500);
-    const newGroupMessagesPollingInterval = setInterval(getAllNewGroupMessagesFromDB, 5000);
+//  const newMessagesPollingInterval = setInterval(getAllNewMessagesFromDB, 500);
+// const newGroupMessagesPollingInterval = setInterval(getAllNewGroupMessagesFromDB, 5000);
+socket.on('recieve-message', (message) => {
 
+    // console.log('R eceived message:', message);
+    displayMessage("You", message.message, true);
+});
 async function getAllNewGroupMessagesFromDB() {
     let AGID = localStorage.getItem('A.G.I.D');
     let AGRMID = localStorage.getItem('A.G.R.M.ID');
     const userId = localStorage.getItem('id');
-    if(AGID == null){
+    if (AGID == null) {
         AGID = 0;
     }
-    if(AGRMID == null){
+    if (AGRMID == null) {
         AGRMID = 0;
     }
 
@@ -93,10 +100,10 @@ async function getAllGroupsOfUserFromDB() {
     try {
         const userId = localStorage.getItem('id');
         const response = await axios.get(`http://localhost:3000/user/fetchGroups/${userId}`);
-        console.log("all groups of user",response.data);
+        console.log("all groups of user", response.data);
         for (let i = 0; i < response.data.length; i++) {
             const data = response.data[i]
-            console.log("///////////",data.group.group_name)
+            console.log("///////////", data.group.group_name)
             // localStorage.setItem(groupName, response.data.result.gorupId)
             displayGroup(data);
         }
@@ -137,7 +144,7 @@ async function getAllMessagesFromDB() {
     console.log("this funciton is working")
     try {
         const response = await axios.get('http://localhost:3000/user/message', { headers: { authorisation: token } });
-        console.log("response of all message in global group",response);
+        console.log("response of all message in global group", response);
         clearChatMessages();
         const messages = {};
         for (let i = 0; i < response.data.result.length; i++) {
@@ -145,7 +152,7 @@ async function getAllMessagesFromDB() {
             let message = response.data.result[i].message;
             let id = response.data.result[i].id;
             let name = response.data.result[i].user_list.name;
-            console.log("name reaching",name);
+            console.log("name reaching", name);
             messages[id] = message;
             var isUser = false;
 
@@ -175,13 +182,14 @@ async function sendMessageToServer() {
         console.log("message:", messageText);
 
         try {
+            socket.emit('send-message', { message: messageText, token: token })
             const response = await axios.post('http://localhost:3000/user/message', { message: messageText, token: token });
             messageInput.value = '';
             console.log("sent message to server", response.data.currentMessage.message);
             console.log("sent message id to server", response.data.currentMessage.id);
             localStorage.setItem('latest msg id', (response.data.currentMessage.id));
 
-            displayMessage("You", response.data.currentMessage.message, true);
+            // displayMessage("You", response.data.currentMessage.message, true);
             // const currentMessage = getCurrentMessageFromServer();
 
         } catch (error) {
@@ -279,9 +287,9 @@ function displayGroupxc(data) {
     const groupId = data.gorupId;
 
 
-    console.log("revieving group id",groupId)
+    console.log("revieving group id", groupId)
 
-    localStorage.setItem(groupName,groupId);
+    localStorage.setItem(groupName, groupId);
 
 
 
@@ -387,8 +395,8 @@ function displayGroupxc(data) {
                 const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId: groupId });
                 messageInput.value = '';
                 console.log("response after savinng group message", response)
-                 localStorage.setItem('A.G.R.M', (response.data.id));//active group recent message
-                 localStorage.setItem('A.G.I.D', (groupId));//active group i d
+                localStorage.setItem('A.G.R.M', (response.data.id));//active group recent message
+                localStorage.setItem('A.G.I.D', (groupId));//active group i d
                 // const isUser = false;
 
                 displayMessage("You", response.data.message, true);
@@ -410,9 +418,9 @@ function displayGroup(data) {
     const groupId = data.groupGorupId;
 
 
-    console.log("revieving group id",groupId)
+    console.log("revieving group id", groupId)
 
-    localStorage.setItem(groupName,groupId);
+    localStorage.setItem(groupName, groupId);
 
 
 
@@ -465,7 +473,7 @@ function displayGroup(data) {
         seeMembersButton.addEventListener('click', function () {
             const container = document.getElementById('group_list');
             container.style.display = 'none';
-            showListOfGroupMembers(groupId,userId);
+            showListOfGroupMembers(groupId, userId);
         });
 
         const logoutButton = document.createElement('button');
@@ -537,13 +545,13 @@ function closeUserList() {
     const container = document.getElementById('group_list');
     container.style.display = 'block';
 }
-async function showListOfGroupMembers(groupId,adminId) {
+async function showListOfGroupMembers(groupId, adminId) {
     try {
         const response = await axios.get(`http://localhost:3000/user/listOfGroupUsers/${groupId}/${adminId}`);
 
         console.log(response);
 
-        
+
         const userList = document.getElementById('all-user-list');
         // userList.innerHTML = '';
 
