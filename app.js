@@ -79,6 +79,10 @@ io.on('connection',(socket)=>{
         console.log("message recieved using socket", message);
         //  io.emit('recieve-message', message);
     })
+    socket.on('send-message-to-group',(message)=>{
+        console.log("group message recieved using socket", message);
+        //  io.emit('recieve-message', message);
+    })
 
 })
 

@@ -112,9 +112,14 @@ exports.groupMessages = async function (req, res) {
     console.log(message);
     console.log(userId);
     console.log(groupId);
+    const io = req.app.get('io');
     try {
         const result = await UserGroupMessages.create({ message: message, groupGorupId: groupId, userListUserId: userId })
         // console.log("result after saving group message", result);
+        const nameAndId = await User.findOne({where:{
+            userId:userId,
+        }})
+        io.emit('recieve-group-message', {result,nameAndId});
         res.status(200).json(result);
     } catch (error) {
         res.status(400).json({ message: "error while saving group message" })

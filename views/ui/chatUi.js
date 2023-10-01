@@ -20,6 +20,22 @@ const id = localStorage.getItem('id');
     }
     
 });
+socket.on('recieve-group-message', (message) => {
+    console.log("group message recieved using sockets",message.result);
+    const userId = message.result.userListUserId
+    const name = message.nameAndId.name
+    console.log("group user name recieved using sockets",message.nameAndId.name);
+    // const name = message.nameAndId.name
+    
+    const id = localStorage.getItem('id');
+         if(userId == id){
+            displayMessage("you", message.result.message, true);
+        }
+         else{
+            displayMessage(name, message.result.message, false);
+        }
+        
+    });
 async function getAllNewGroupMessagesFromDB() {
     let AGID = localStorage.getItem('A.G.I.D');
     let AGRMID = localStorage.getItem('A.G.R.M.ID');
@@ -401,6 +417,7 @@ function displayGroupxc(data) {
             console.log("message:", messageText);
 
             try {
+                socket.emit('send-message-to-group',{ message: messageText, userId: userId, groupId: groupId })
                 const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId: groupId });
                 messageInput.value = '';
                 console.log("response after savinng group message", response)
@@ -408,7 +425,7 @@ function displayGroupxc(data) {
                 localStorage.setItem('A.G.I.D', (groupId));//active group i d
                 // const isUser = false;
 
-                displayMessage("You", response.data.message, true);
+                // displayMessage("You", response.data.message, true);
                 // const currentMessage = getCurrentMessageFromServer();
 
             } catch (error) {
@@ -532,13 +549,14 @@ function displayGroup(data) {
             console.log("message:", messageText);
 
             try {
+                socket.emit('send-message-to-group',{ message: messageText, userId: userId, groupId: groupId })
                 const response = await axios.post('http://localhost:3000/user/group/message', { message: messageText, userId: userId, groupId: groupId });
                 messageInput.value = '';
                 console.log("response after savinng group message", response)
                 localStorage.setItem('A.G.R.M.ID', (response.data.id));//active group recent message ID
                 localStorage.setItem('A.G.I.D', groupId);//active group i d
 
-                displayMessage("You", response.data.message, true);
+                // displayMessage("You", response.data.message, true);
                 // const currentMessage = getCurrentMessageFromServer();
 
             } catch (error) {
