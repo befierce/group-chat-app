@@ -8,8 +8,17 @@ window.addEventListener('DOMContentLoaded', getAllMessagesOfAllGroupUserHave)
 // const newGroupMessagesPollingInterval = setInterval(getAllNewGroupMessagesFromDB, 5000);
 socket.on('recieve-message', (message) => {
 
-    // console.log('R eceived message:', message);
-    displayMessage("You", message.message, true);
+const userId = message.nameAndId.userId
+const name = message.nameAndId.name
+
+const id = localStorage.getItem('id');
+     if(userId == id){
+        displayMessage("you", message.newMessage.message, true);
+    }
+     else{
+        displayMessage(name, message.newMessage.message, false);
+    }
+    
 });
 async function getAllNewGroupMessagesFromDB() {
     let AGID = localStorage.getItem('A.G.I.D');

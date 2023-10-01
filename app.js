@@ -77,10 +77,10 @@ io.on('connection',(socket)=>{
 
     socket.on('send-message',(message)=>{
         console.log("message recieved using socket", message);
-         io.emit('recieve-message', message);
+        //  io.emit('recieve-message', message);
     })
 
 })
 
-
+app.set('io', io);//making io globally accessible
 // module.exports = {server,io}

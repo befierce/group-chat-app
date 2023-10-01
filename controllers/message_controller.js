@@ -12,6 +12,7 @@ messageController = async function (req, res) {
     // console.log(req.body);
     const { message, token } = req.body;
     console.log('token', token);
+    const io = req.app.get('io');
 
     jwt.verify(token, secret_key, async (err, decoded) => {
         if (err) {
@@ -20,17 +21,13 @@ messageController = async function (req, res) {
         } else {
             console.log("decoded key", decoded);
             const newMessage = await Message.create({ message, userId: decoded.id });
-            
-            // console.log("newMessage", newMessage)
-            // io.on('connection',(socket)=>{
-            //     console.log('user connected');
-            
-            //     socket.on('send-message',(message)=>{
-            //         console.log("message recieved using socket", message);
-            //         io.emit('recieve-message', message);
-            //     })
-            
-            // })
+            const nameAndId = await User.findOne({where:{
+                userId:decoded.id,
+                
+            }
+            // attributes: ['name']
+        })
+            io.emit('recieve-message', {newMessage,nameAndId});
             res.status(200).json({ message: 'Message sent successfully', currentMessage: newMessage });
         }
     });
@@ -56,12 +53,12 @@ allMessageController = async function (req, res) {
                 });
 
                 // console.log("*******", result);
-            res.status(200).json({ result });
-            }catch(error){
+                res.status(200).json({ result });
+            } catch (error) {
                 console.log(error);
             }
 
-            
+
         }
     })
 }
